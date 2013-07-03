@@ -11,6 +11,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 'CHAR_OPTION' => '-',
                 'CHAR_RIGHT' => '+',
                 'CHAR_STRING' => '=',
+                'CHAR_MULTI' => '*',
                 'TYPE_SINGLE' => 'single',
                 'TYPE_MULTI' => 'multi',
                 'TYPE_STRING' => 'string',
@@ -48,6 +49,26 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     ),
                 ),
             ),
+            'single alt syntax' => array(
+                'lines' => array(
+                    'question',
+                    '() option1',
+                    '( ) option2',
+                    '(x) option3',
+                ),
+                'questions' => array(
+                    array(
+                        'title' => 'question',
+                        'type' => Parser::TYPE_SINGLE,
+                        'options' => array(
+                            'option1',
+                            'option2',
+                            'option3',
+                        ),
+                        'answer' => 2,
+                    ),
+                ),
+            ),
             array(
                 'lines' => array(
                     '',
@@ -71,6 +92,37 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     ),
                 ),
             ),
+            'many questions' => array(
+                'lines' => array(
+                    'question1',
+                    '- option11',
+                    '+ option12',
+                    '',
+                    'question2',
+                    '- option21',
+                    '+ option22',
+                ),
+                'questions' => array(
+                    array(
+                        'title' => 'question1',
+                        'type' => Parser::TYPE_SINGLE,
+                        'options' => array(
+                            'option11',
+                            'option12',
+                        ),
+                        'answer' => 1,
+                    ),
+                    array(
+                        'title' => 'question2',
+                        'type' => Parser::TYPE_SINGLE,
+                        'options' => array(
+                            'option21',
+                            'option22',
+                        ),
+                        'answer' => 1,
+                    ),
+                ),
+            ),
             array(
                 'lines' => array(
                     'multi',
@@ -88,6 +140,44 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                             'option3',
                         ),
                         'answer' => array(1, 2),
+                    ),
+                ),
+            ),
+            array(
+                'lines' => array(
+                    'multi with *',
+                    '* option1',
+                    '+ option2',
+                ),
+                'questions' => array(
+                    array(
+                        'title' => 'multi with *',
+                        'type' => Parser::TYPE_MULTI,
+                        'options' => array(
+                            'option1',
+                            'option2',
+                        ),
+                        'answer' => array(1),
+                    ),
+                ),
+            ),
+            'multi alt syntax' => array(
+                'lines' => array(
+                    'multi alt syntax',
+                    '[] option1',
+                    '[ ] option2',
+                    '[x] option3',
+                ),
+                'questions' => array(
+                    array(
+                        'title' => 'multi alt syntax',
+                        'type' => Parser::TYPE_MULTI,
+                        'options' => array(
+                            'option1',
+                            'option2',
+                            'option3',
+                        ),
+                        'answer' => array(2),
                     ),
                 ),
             ),

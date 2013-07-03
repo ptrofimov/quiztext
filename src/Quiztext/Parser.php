@@ -6,6 +6,7 @@ class Parser
     const CHAR_OPTION = '-';
     const CHAR_RIGHT = '+';
     const CHAR_STRING = '=';
+    const CHAR_MULTI = '*';
 
     const TYPE_SINGLE = 'single';
     const TYPE_MULTI = 'multi';
@@ -24,7 +25,7 @@ class Parser
     public function __construct($text)
     {
         $this->lines = explode(PHP_EOL, $text);
-        $this->specialChars = array(self::CHAR_OPTION, self::CHAR_RIGHT, self::CHAR_STRING);
+        $this->specialChars = array(self::CHAR_OPTION, self::CHAR_RIGHT, self::CHAR_STRING, self::CHAR_MULTI);
     }
 
     private function flushQuestion()
@@ -35,9 +36,11 @@ class Parser
             } elseif (!$this->answer) {
                 throw new \Exception('Question without answer');
             }
-            if ($this->type == self::TYPE_MULTI && count($this->answer) == 1) {
-                $this->type = self::TYPE_SINGLE;
+            if ($this->type == self::TYPE_SINGLE && count($this->answer) == 1) {
                 $this->answer = reset($this->answer);
+            }
+            if ($this->type == self::TYPE_SINGLE && count($this->answer) > 1) {
+                $this->type = self::TYPE_MULTI;
             }
             $this->questions[] = array(
                 'title' => $this->title,
@@ -47,7 +50,7 @@ class Parser
             );
         }
         $this->title = '';
-        $this->type = self::TYPE_MULTI;
+        $this->type = self::TYPE_SINGLE;
         $this->options = array();
         $this->answer = array();
     }
@@ -66,6 +69,9 @@ class Parser
             } elseif ($line[0] == self::CHAR_STRING) {
                 $this->answer = trim($line, '= ');
                 $this->type = self::TYPE_STRING;
+            } elseif ($line[0] == self::CHAR_MULTI) {
+                $this->options[] = trim($line, '* ');
+                $this->type = self::TYPE_MULTI;
             } else {
                 $this->flushQuestion();
                 $this->title = $line;
@@ -80,6 +86,16 @@ class Parser
     {
         for ($out = ''; $this->index < count($this->lines); $this->index++) {
             $line = str_replace(array('  ', "\t"), array(' ', ' '), trim($this->lines[$this->index]));
+            $line = str_replace(
+                array('[]', '[ ]', '[x]'),
+                array(self::CHAR_MULTI, self::CHAR_MULTI, self::CHAR_RIGHT),
+                $line
+            );
+            $line = str_replace(
+                array('()', '( )', '(x)'),
+                array(self::CHAR_OPTION, self::CHAR_OPTION, self::CHAR_RIGHT),
+                $line
+            );
             if ($out && (in_array($line[0], $this->specialChars) || !$line[0])) {
                 return trim($out);
             } else {
