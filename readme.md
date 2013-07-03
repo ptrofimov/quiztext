@@ -2,7 +2,12 @@
 
 QuizText is markdown-inspired text-based format to write quiz questions with options and right answers.
 
-## Example
+Syntax supports:
+- single-choice questions
+- multiple-choice questions
+- input questions
+
+### Example
 
 ```
 Who famously said "640K ought to be enough for anybody."?
@@ -32,6 +37,10 @@ Which of the following is not a social network site?
 [ ] MySpace
 [ ] Orkut
 [x] Yahoo
+
+What is the name of the most popular Linux console text editor:
+(input question: you need to type "vim" to give a right answer)
+= vim
 ```
 
 This repository contains PHP-written parser for QuizText format.
