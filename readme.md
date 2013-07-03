@@ -3,7 +3,7 @@
 QuizText is markdown-inspired text-based human-readable markup language
 to write down quiz questions with options and right answers.
 
-It was created as an alternative to XML-based (QuizML)[http://theses.lib.polyu.edu.hk/handle/200/3476].
+It was created as an alternative to XML-based [QuizML](http://theses.lib.polyu.edu.hk/handle/200/3476).
 
 Syntax supports:
 - single-choice questions
