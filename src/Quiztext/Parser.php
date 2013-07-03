@@ -1,23 +1,5 @@
 <?php
-
-$text = <<<TEXT
-
-question1
-sdf
-- option1
-sdf
-+ option2
-- option3
-
-question2
-+ option1
-- option2
-+ option3
-long options
-
-free-input question
-= PHP
-TEXT;
+namespace Quiztext;
 
 class Parser
 {
@@ -108,6 +90,3 @@ class Parser
         return trim($out);
     }
 }
-
-$parser = new Parser($text);
-var_dump($parser->parse());
