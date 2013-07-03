@@ -31,9 +31,9 @@ class Parser
     {
         if ($this->title) {
             if ($this->type != self::TYPE_STRING && !$this->options) {
-                throw new Exception('Question without options');
+                throw new \Exception('Question without options');
             } elseif (!$this->answer) {
-                throw new Exception('Question without answer');
+                throw new \Exception('Question without answer');
             }
             if ($this->type == self::TYPE_MULTI && count($this->answer) == 1) {
                 $this->type = self::TYPE_SINGLE;
