@@ -15,9 +15,11 @@ class Parser
     /** @var array */
     private $lines;
     private $index;
+    /** @var string|null */
+    private $title;
     private $questions;
     private $options;
-    private $title;
+    private $text;
     private $specialChars;
     private $answer;
     private $type;
@@ -30,8 +32,16 @@ class Parser
 
     private function flushQuestion()
     {
-        if ($this->title) {
+        if ($this->text) {
             if ($this->type != self::TYPE_STRING && !$this->options) {
+                if (!$this->questions) {
+                    $this->title = $this->text;
+                    $this->text = '';
+                    $this->type = self::TYPE_SINGLE;
+                    $this->options = array();
+                    $this->answer = array();
+                    return;
+                }
                 throw new \Exception('Question without options');
             } elseif (!$this->answer) {
                 throw new \Exception('Question without answer');
@@ -43,13 +53,13 @@ class Parser
                 $this->type = self::TYPE_MULTI;
             }
             $this->questions[] = array(
-                'title' => $this->title,
+                'title' => $this->text,
                 'type' => $this->type,
                 'options' => $this->options,
                 'answer' => $this->answer,
             );
         }
-        $this->title = '';
+        $this->text = '';
         $this->type = self::TYPE_SINGLE;
         $this->options = array();
         $this->answer = array();
@@ -58,6 +68,7 @@ class Parser
     public function parse()
     {
         $this->index = 0;
+        $this->title = null;
         $this->questions = array();
         $this->flushQuestion();
         while ($line = $this->getLine()) {
@@ -74,12 +85,18 @@ class Parser
                 $this->type = self::TYPE_MULTI;
             } else {
                 $this->flushQuestion();
-                $this->title = $line;
+                $this->text = $line;
             }
         }
         $this->flushQuestion();
 
         return $this->questions;
+    }
+
+    /** @return string|null */
+    public function getTitle()
+    {
+        return $this->title;
     }
 
     private function getLine()

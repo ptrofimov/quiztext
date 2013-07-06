@@ -195,15 +195,33 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     ),
                 ),
             ),
+            'quiz with title' => array(
+                'lines' => array(
+                    'title',
+                    '',
+                    'string type',
+                    '= answer',
+                ),
+                'questions' => array(
+                    array(
+                        'title' => 'string type',
+                        'type' => Parser::TYPE_STRING,
+                        'options' => array(),
+                        'answer' => 'answer',
+                    ),
+                ),
+                'title' => 'title',
+            ),
         );
     }
 
     /**
      * @dataProvider texts
      */
-    public function testParse(array $lines, array $questions)
+    public function testParse(array $lines, array $questions, $title = null)
     {
         $parser = new Parser(implode(PHP_EOL, $lines));
         $this->assertEquals($questions, $parser->parse());
+        $this->assertSame($title, $parser->getTitle());
     }
 }

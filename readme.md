@@ -13,6 +13,8 @@ Syntax supports:
 ### Example
 
 ```
+The title of the quiz
+
 Who famously said "640K ought to be enough for anybody."?
 (single-choice question with right answer "BillGates")
 + Bill Gates
