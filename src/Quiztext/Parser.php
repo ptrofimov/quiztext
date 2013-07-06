@@ -4,7 +4,7 @@ namespace Quiztext;
 class Parser
 {
     const CHAR_OPTION = '-';
-    const CHAR_RIGHT = '+';
+    const CHAR_CORRECT = '+';
     const CHAR_STRING = '=';
     const CHAR_MULTI = '*';
 
@@ -27,7 +27,7 @@ class Parser
     public function __construct($text)
     {
         $this->lines = explode(PHP_EOL, $text);
-        $this->specialChars = array(self::CHAR_OPTION, self::CHAR_RIGHT, self::CHAR_STRING, self::CHAR_MULTI);
+        $this->specialChars = array(self::CHAR_OPTION, self::CHAR_CORRECT, self::CHAR_STRING, self::CHAR_MULTI);
     }
 
     private function flushQuestion()
@@ -36,10 +36,7 @@ class Parser
             if ($this->type != self::TYPE_STRING && !$this->options) {
                 if (!$this->questions) {
                     $this->title = $this->text;
-                    $this->text = '';
-                    $this->type = self::TYPE_SINGLE;
-                    $this->options = array();
-                    $this->answer = array();
+                    $this->resetQuestion();
                     return;
                 }
                 throw new \Exception('Question without options');
@@ -59,6 +56,11 @@ class Parser
                 'answer' => $this->answer,
             );
         }
+        $this->resetQuestion();
+    }
+
+    private function resetQuestion()
+    {
         $this->text = '';
         $this->type = self::TYPE_SINGLE;
         $this->options = array();
@@ -70,18 +72,18 @@ class Parser
         $this->index = 0;
         $this->title = null;
         $this->questions = array();
-        $this->flushQuestion();
+        $this->resetQuestion();
         while ($line = $this->getLine()) {
             if ($line[0] == self::CHAR_OPTION) {
-                $this->options[] = trim($line, '- ');
-            } elseif ($line[0] == self::CHAR_RIGHT) {
-                $this->options[] = trim($line, '+ ');
+                $this->options[] = trim($line, self::CHAR_OPTION . ' ');
+            } elseif ($line[0] == self::CHAR_CORRECT) {
+                $this->options[] = trim($line, self::CHAR_CORRECT . ' ');
                 $this->answer[] = count($this->options) - 1;
             } elseif ($line[0] == self::CHAR_STRING) {
-                $this->answer = trim($line, '= ');
+                $this->answer = trim($line, self::CHAR_STRING . ' ');
                 $this->type = self::TYPE_STRING;
             } elseif ($line[0] == self::CHAR_MULTI) {
-                $this->options[] = trim($line, '* ');
+                $this->options[] = trim($line, self::CHAR_MULTI . ' ');
                 $this->type = self::TYPE_MULTI;
             } else {
                 $this->flushQuestion();
@@ -105,12 +107,12 @@ class Parser
             $line = str_replace(array('  ', "\t"), array(' ', ' '), trim($this->lines[$this->index]));
             $line = str_replace(
                 array('[]', '[ ]', '[x]'),
-                array(self::CHAR_MULTI, self::CHAR_MULTI, self::CHAR_RIGHT),
+                array(self::CHAR_MULTI, self::CHAR_MULTI, self::CHAR_CORRECT),
                 $line
             );
             $line = str_replace(
                 array('()', '( )', '(x)'),
-                array(self::CHAR_OPTION, self::CHAR_OPTION, self::CHAR_RIGHT),
+                array(self::CHAR_OPTION, self::CHAR_OPTION, self::CHAR_CORRECT),
                 $line
             );
             if ($out && (in_array($line[0], $this->specialChars) || !$line[0])) {

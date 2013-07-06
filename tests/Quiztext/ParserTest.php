@@ -9,7 +9,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             array(
                 'CHAR_OPTION' => '-',
-                'CHAR_RIGHT' => '+',
+                'CHAR_CORRECT' => '+',
                 'CHAR_STRING' => '=',
                 'CHAR_MULTI' => '*',
                 'TYPE_SINGLE' => 'single',
