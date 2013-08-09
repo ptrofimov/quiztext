@@ -115,7 +115,7 @@ class Parser
                 array(self::CHAR_OPTION, self::CHAR_OPTION, self::CHAR_CORRECT),
                 $line
             );
-            if ($out && (in_array($line[0], $this->specialChars) || !$line[0])) {
+            if ($out && (!isset($line[0]) || in_array($line[0], $this->specialChars))) {
                 return trim($out);
             } else {
                 $out .= $line . ' ';
